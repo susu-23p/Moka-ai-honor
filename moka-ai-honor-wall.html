@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moka AI 全员赋能计划 · 荣誉时刻</title>
+<style>
+  :root {
+    --bg: #0a0f1c;
+    --bg-card: #131a2e;
+    --surface: #1a2340;
+    --cyan: #00c6ff;
+    --purple: #8b5cf6;
+    --rose: #f43f5e;
+    --gold: #f59e0b;
+    --amber: #f97316;
+    --green: #10b981;
+    --pink: #ec4899;
+    --text: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border: rgba(255,255,255,0.06);
+    --radius: 20px;
+    --radius-sm: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Canvas Background ── */
+  #particleCanvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 40px 20px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px; border-radius: 100px;
+    border: 1px solid rgba(0,198,255,0.3);
+    background: rgba(0,198,255,0.08);
+    color: var(--cyan); font-size: 14px; font-weight: 500; letter-spacing: 0.05em;
+    margin-bottom: 32px; animation: fadeInUp 0.8s ease;
+  }
+  .hero-badge .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--cyan);
+    animation: pulse-dot 2s infinite;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 8vw, 80px); font-weight: 800; line-height: 1.15;
+    letter-spacing: -0.02em; animation: fadeInUp 0.8s 0.1s ease both;
+  }
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, #00c6ff 0%, #8b5cf6 40%, #f43f5e 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero h2 {
+    font-size: clamp(24px, 4vw, 36px); font-weight: 600;
+    color: var(--text-secondary); margin-top: 16px;
+    animation: fadeInUp 0.8s 0.2s ease both;
+  }
+  .hero h2 em {
+    font-style: normal; color: var(--gold);
+  }
+  .hero-desc {
+    max-width: 600px; margin-top: 24px; color: var(--text-secondary);
+    font-size: 16px; line-height: 1.8;
+    animation: fadeInUp 0.8s 0.3s ease both;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 40px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    animation: fadeInUp 0.8s 0.5s ease both, float 3s ease-in-out 1s infinite;
+  }
+  .hero-scroll span { font-size: 12px; color: var(--text-secondary); letter-spacing: 0.1em; }
+  .hero-scroll svg { width: 20px; height: 20px; opacity: 0.5; }
+
+  /* ── Stats Bar ── */
+  .stats-bar {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: clamp(24px, 6vw, 80px);
+    padding: 48px 20px; flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-number {
+    font-size: clamp(36px, 6vw, 56px); font-weight: 800;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; line-height: 1.1;
+  }
+  .stat-label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;
+    padding: 16px 20px;
+    background: rgba(10,15,28,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-pill {
+    padding: 8px 20px; border-radius: 100px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-secondary); font-size: 14px;
+    cursor: pointer; transition: all 0.3s ease; font-family: inherit;
+    white-space: nowrap;
+  }
+  .filter-pill:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+  .filter-pill.active {
+    background: rgba(0,198,255,0.15); border-color: var(--cyan);
+    color: var(--cyan); font-weight: 600;
+  }
+
+  /* ── Cards Grid ── */
+  .cards-section {
+    position: relative; z-index: 1;
+    max-width: 1300px; margin: 0 auto; padding: 40px 20px 100px;
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 800px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+    overflow: hidden;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--dept-color, var(--cyan));
+    border-radius: 0 0 4px 4px;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .card:hover::before { opacity: 1; }
+  .card.expanded { border-color: rgba(255,255,255,0.2); }
+  .card.hidden { display: none; }
+
+  .card-header {
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .card-avatar {
+    flex-shrink: 0; width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: #fff;
+    position: relative; overflow: hidden;
+  }
+  .card-avatar .avatar-bg {
+    position: absolute; inset: 0;
+    border-radius: 16px;
+  }
+  .card-avatar .avatar-initial { position: relative; z-index: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  .card-meta { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 18px; font-weight: 700; color: var(--text);
+  }
+  .card-dept {
+    font-size: 13px; color: var(--text-secondary); margin-top: 2px;
+  }
+  .card-session {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 600; margin-top: 6px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .card-topic {
+    font-size: 16px; font-weight: 700; color: var(--text);
+    line-height: 1.4;
+  }
+  .card-topic::before {
+    content: '📡 '; font-size: 14px;
+  }
+
+  .card-slogan {
+    font-size: 14px; color: var(--text-secondary);
+    line-height: 1.6; font-style: italic;
+    padding-left: 12px; border-left: 2px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .card:hover .card-slogan { border-left-color: var(--dept-color, var(--cyan)); }
+
+  .card-expand {
+    display: none; flex-direction: column; gap: 20px;
+    padding-top: 16px; border-top: 1px solid var(--border);
+    animation: fadeIn 0.4s ease;
+  }
+  .card.expanded .card-expand { display: flex; }
+
+  .qr-placeholder {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px; border-radius: var(--radius-sm);
+    background: var(--surface); border: 1px dashed var(--border);
+  }
+  .qr-icon-box {
+    flex-shrink: 0; width: 80px; height: 80px;
+    border-radius: 8px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .qr-icon-box svg { width: 48px; height: 48px; opacity: 0.3; }
+  .qr-icon-box::after {
+    content: 'QR'; position: absolute; font-size: 14px;
+    font-weight: 700; color: #333;
+  }
+  .qr-info { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  .card-expand-hint {
+    font-size: 12px; color: var(--text-secondary); text-align: center;
+    transition: color 0.3s;
+  }
+  .card:hover .card-expand-hint { color: var(--cyan); }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* ── Reveal on scroll ── */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Footer ── */
+  .footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 40px 20px;
+    color: var(--text-secondary); font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span>Moka AI 全员赋能计划</div>
+  <h1><span class="gradient-text">荣誉时刻</span></h1>
+  <h2>Honor Wall · <em>AI先锋集结</em></h2>
+  <p class="hero-desc">
+    每一期分享，都是AI探索路上的一次点亮。<br>
+    十七期精彩，十六位先锋，用实践书写Moka的AI进化史。
+  </p>
+  <div class="hero-scroll"><span>向下探索</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg></div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-number" id="statSessions">0</div><div class="stat-label">期精彩分享</div></div>
+  <div class="stat-item"><div class="stat-number" id="statSpeakers">0</div><div class="stat-label">位AI先锋</div></div>
+  <div class="stat-item"><div class="stat-number" id="statDepts">0</div><div class="stat-label">个部门联动</div></div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <button class="filter-pill active" data-filter="all">全部</button>
+</div>
+
+<section class="cards-section">
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<footer class="footer">
+  Moka AI 全员赋能计划 · 荣誉时刻 · 2024–2025
+</footer>
+
+<script>
+// ── DATA ──
+const deptColors = {
+  'People一体化产品部': '#00c6ff',
+  'ATS产品部': '#a855f7',
+  '实施交付部': '#10b981',
+  '解决方案部': '#f59e0b',
+  '客户成功部': '#ec4899',
+  '销售部': '#f97316'
+};
+
+const sessions = [
+  { session:'第一期', name:'谢文平', dept:'People一体化产品部', title:'测试TL', topic:'AI线上质量保障体系', slogan:'AI缩短从想法到上线的距离' },
+  { session:'第二期', name:'张豪', dept:'People一体化产品部', title:'后端开发工程师', topic:'AI coding时代的进化之路', slogan:'以确定性固守悬崖，以概率驰骋草原，以三角协作驾驭AI' },
+  { session:'第三期', name:'杨明', dept:'People一体化产品部', title:'后端开发工程师', topic:'AI构建的自动化代码保障体系', slogan:'让AI成为效率的放大器，质量守护器' },
+  { session:'第四期', name:'刘泽', dept:'ATS产品部', title:'ATS研发-AI', topic:'从零上手小龙虾OpenClaw—养好虾的三个动作', slogan:'拥抱AI，拥抱成长' },
+  { session:'第五期', name:'苏鹏', dept:'ATS产品部', title:'产品经理', topic:'介绍一个解决问题刚刚好的AI工具——Manus', slogan:'对现状保持不满，观察它，解决它' },
+  { session:'第六期', name:'朱尧', dept:'实施交付部', title:'项目总监', topic:'非专业程序员—Antigravity vibe coding 探索之路', slogan:'把需求说清楚，剩下的交给AI' },
+  { session:'第七期', name:'周子深', dept:'实施交付部', title:'渠道交付专家', topic:'Vibe Coding实战：个人提效工具的系统化构建', slogan:'AI驱动自动化，重构渠道交付效率' },
+  { session:'第八期', name:'刘国泰', dept:'ATS产品部', title:'后端开发工程师', topic:'OpenClaw记忆-Agent记忆工程实践', slogan:'你越用它，它越像你，然后一起变强' },
+  { session:'第九期', name:'张均谊', dept:'解决方案部', title:'华东解决方案负责人', topic:'非技术小白的 AI 进阶之路', slogan:'让AI成为你的思考伙伴，把经验沉淀为组织能力' },
+  { session:'第十期', name:'杨挺', dept:'客户成功部', title:'全国SMB&中西负责人', topic:'你的知识值得被AI管理', slogan:'把知识管理交给 AI ，把思考空间留给自己' },
+  { session:'第十一期', name:'田昌文', dept:'People一体化产品部', title:'前端开发工程师', topic:'claude code的进阶之路', slogan:'让每一次变化，都成为下一次进化' },
+  { session:'第十二期', name:'范曦文', dept:'客户成功部', title:'客户服务中心负责人', topic:'把 Claude code 训练成超级同事', slogan:'你做大脑，Claude帮你做手脚' },
+  { session:'第十三期', name:'王壮', dept:'ATS产品部', title:'后端开发工程师', topic:'探索Agent的进化', slogan:'从会回答，到会持续变强' },
+  { session:'第十四期', name:'华晓东', dept:'实施交付部', title:'华东实施负责人', topic:'Harness，更好地驾驭AI', slogan:'AI不是替代者，而是能力放大器' },
+  { session:'第十五期', name:'冯梦佳', dept:'销售部', title:'销售经理', topic:'穷鬼套餐-销售如何低成本用好Agent', slogan:'' },
+  { session:'第十六期', name:'徐庆', dept:'实施交付部', title:'华北实施负责人', topic:'从「用AI」到「让AI干活」', slogan:'' },
+  { session:'第十七期', name:'杨挺', dept:'客户成功部', title:'全国SMB&中西负责人', topic:'万物皆可蒸馏', slogan:'蒸蒸日上，"馏"住精华' }
+];
+
+// Avatar gradient pairs (distinct per person)
+const avatarGradients = [
+  ['#00c6ff','#0072ff'],['#8b5cf6','#6366f1'],['#f43f5e','#e11d48'],
+  ['#10b981','#059669'],['#f59e0b','#d97706'],['#ec4899','#db2777'],
+  ['#06b6d4','#0891b2'],['#a855f7','#7c3aed'],['#f97316','#ea580c'],
+  ['#14b8a6','#0d9488'],['#6366f1','#4f46e5'],['#e11d48','#be123c'],
+  ['#0ea5e9','#0284c7'],['#84cc16','#65a30d'],['#f43f5e','#e11d48'],
+  ['#8b5cf6','#7c3aed']
+];
+
+// Map names to gradient indices
+const nameGradientIdx = {};
+let gi = 0;
+const seenNames = new Set();
+sessions.forEach(s => {
+  if (!seenNames.has(s.name)) {
+    seenNames.add(s.name);
+    nameGradientIdx[s.name] = gi++;
+  }
+});
+
+// ── BUILDER ──
+function buildFilters() {
+  const depts = [...new Set(sessions.map(s => s.dept))];
+  const bar = document.getElementById('filterBar');
+
+  // "全部" button
+  const allBtn = bar.querySelector('[data-filter="all"]');
+  allBtn.addEventListener('click', () => applyFilter('all', allBtn));
+
+  depts.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-pill';
+    btn.dataset.filter = d;
+    btn.textContent = d;
+    btn.addEventListener('click', () => applyFilter(d, btn));
+    bar.appendChild(btn);
+  });
+}
+
+function buildCards() {
+  const grid = document.getElementById('cardsGrid');
+  sessions.forEach((s, i) => {
+    const color = deptColors[s.dept] || '#00c6ff';
+    const gIdx = nameGradientIdx[s.name] || 0;
+    const [g1, g2] = avatarGradients[gIdx % avatarGradients.length];
+    const initial = s.name.charAt(0);
+
+    const card = document.createElement('div');
+    card.className = 'card reveal';
+    card.style.setProperty('--dept-color', color);
+    card.dataset.dept = s.dept;
+    card.dataset.name = s.name;
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-avatar">
+          <div class="avatar-bg" style="background:linear-gradient(135deg,${g1},${g2})"></div>
+          <span class="avatar-initial">${initial}</span>
+        </div>
+        <div class="card-meta">
+          <div class="card-name">${s.name}</div>
+          <div class="card-dept">${s.dept} · ${s.title}</div>
+          <div class="card-session" style="border-color:${color}33;color:${color}">
+            <span style="width:6px;height:6px;border-radius:50%;background:${color};display:inline-block;"></span>
+            ${s.session}
+          </div>
+        </div>
+      </div>
+      <div class="card-topic">${s.topic}</div>
+      ${s.slogan ? `<div class="card-slogan">"${s.slogan}"</div>` : ''}
+      <div class="card-expand">
+        <div class="qr-placeholder">
+          <div class="qr-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4" rx="1"/>
+              <rect x="20" y="14" width="1" height="1"/><rect x="20" y="16" width="1" height="3"/>
+              <rect x="18" y="20" width="3" height="1"/><rect x="14" y="18" width="1" height="3"/>
+            </svg>
+          </div>
+          <div class="qr-info">
+            <strong>扫码查看分享内容</strong><br>
+            分享人：${s.name}<br>
+            主题：${s.topic}
+          </div>
+        </div>
+      </div>
+      <div class="card-expand-hint">👆 点击展开查看二维码</div>
+    `;
+
+    card.addEventListener('click', function(e) {
+      // Don't toggle if clicking links or buttons
+      if (e.target.closest('a, button')) return;
+      this.classList.toggle('expanded');
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+// ── FILTER LOGIC ──
+function applyFilter(filter, activeBtn) {
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  activeBtn.classList.add('active');
+
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    if (filter === 'all' || card.dataset.dept === filter) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+// ── SCROLL REVEAL ──
+function setupReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// ── STATS COUNTER ──
+function animateStats() {
+  const uniqueSpeakers = new Set(sessions.map(s => s.name)).size;
+  const uniqueDepts = new Set(sessions.map(s => s.dept)).size;
+  const totalSessions = sessions.length;
+
+  function countUp(el, target, duration) {
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * target);
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        countUp(document.getElementById('statSessions'), totalSessions, 1500);
+        countUp(document.getElementById('statSpeakers'), uniqueSpeakers, 1500);
+        countUp(document.getElementById('statDepts'), uniqueDepts, 1500);
+        obs.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  obs.observe(document.querySelector('.stats-bar'));
+}
+
+// ── PARTICLE CANVAS ──
+function initParticles() {
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const particles = [];
+  const PARTICLE_COUNT = 80;
+  const CONNECT_DIST = 120;
+  const deptColorValues = Object.values(deptColors);
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return [r,g,b];
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const color = deptColorValues[Math.floor(Math.random() * deptColorValues.length)];
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      radius: Math.random() * 2 + 1,
+      color: hexToRgb(color)
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    particles.forEach((p, i) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = W;
+      if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H;
+      if (p.y > H) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},0.6)`;
+      ctx.fill();
+
+      for (let j = i + 1; j < particles.length; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x;
+        const dy = p.y - q.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECT_DIST) {
+          const alpha = (1 - dist / CONNECT_DIST) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── INIT ──
+buildCards();
+buildFilters();
+setupReveal();
+animateStats();
+initParticles();
+</script>
+</body>
+</html>
