@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moka AI Native Organization · 2026 AI先锋集结</title>
+<style>
+:root {
+  --bg:#f5f7fb;--bg-card:#ffffff;--surface:#e8ecf4;--cyan:#2b9bd6;--blue:#5b6ec7;
+  --purple:#8b7ec8;--gold:#d4910d;--amber:#d63013;--green:#2da85e;
+  --text:#1a1f36;--text-secondary:#2d3a5a;--text-muted:#58647c;
+  --border:rgba(0,0,0,.08);--radius:20px;--radius-sm:12px;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --tech-line:rgba(43,155,214,.08);--tech-glow:rgba(43,155,214,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ═══ HERO ═══ */
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;overflow:hidden}
+/* Tech grid overlay */
+.hero::before{content:'';position:absolute;inset:0;background-image:
+  linear-gradient(var(--tech-line) 1px,transparent 1px),
+  linear-gradient(90deg,var(--tech-line) 1px,transparent 1px);
+  background-size:48px 48px;z-index:0;pointer-events:none;mask-image:radial-gradient(ellipse 80% 70% at center,black 15%,transparent 65%);-webkit-mask-image:radial-gradient(ellipse 80% 70% at center,black 15%,transparent 65%)}
+/* Scanning line */
+.hero-scanline{position:absolute;left:5%;width:90%;height:2px;z-index:1;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(43,155,214,.4),rgba(99,102,224,.4),transparent);filter:blur(3px);animation:scanMove 5s ease-in-out infinite;opacity:.7}
+@keyframes scanMove{0%{top:8%}50%{top:82%}100%{top:8%}}
+/* Floating tech orbs */
+.hero-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0;filter:blur(60px);opacity:.4}
+.hero-orb.o1{width:300px;height:300px;top:-5%;left:-5%;background:radial-gradient(circle,rgba(43,155,214,.15),transparent 70%);animation:orbFloat1 8s ease-in-out infinite}
+.hero-orb.o2{width:250px;height:250px;bottom:5%;right:-3%;background:radial-gradient(circle,rgba(139,126,200,.12),transparent 70%);animation:orbFloat2 10s ease-in-out infinite}
+.hero-orb.o3{width:200px;height:200px;top:30%;right:15%;background:radial-gradient(circle,rgba(99,102,224,.1),transparent 70%);animation:orbFloat3 7s ease-in-out infinite}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,30px) scale(1.1)}66%{transform:translate(-20px,50px) scale(.95)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-30px,-20px) scale(1.15)}66%{transform:translate(20px,-40px) scale(.9)}}
+@keyframes orbFloat3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.2)}}
+/* Hexagon corner brackets */
+.hero-bracket{position:absolute;width:48px;height:48px;z-index:0;pointer-events:none;opacity:.2}
+.hero-bracket.tl{top:24px;left:24px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.hero-bracket.tr{top:24px;right:24px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.hero-bracket.bl{bottom:80px;left:24px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.hero-bracket.br{bottom:80px;right:24px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+/* Robot tech illustration */
+.hero-tech-figure{position:absolute;z-index:0;pointer-events:none;opacity:.055;bottom:80px;left:5%;width:180px;height:220px}
+@media(max-width:768px){.hero-tech-figure{display:none}}
+.hero-tech-figure svg{width:100%;height:100%}
+/* Circuit decoration lines */
+.hero-circuit{position:absolute;z-index:0;pointer-events:none;opacity:.045}
+.hero-circuit.c1{top:50px;right:6%}
+.hero-circuit.c2{bottom:140px;left:4%}
+@media(max-width:768px){.hero-circuit{display:none}}
+/* Digital dots decoration */
+.hero-dots{position:absolute;z-index:0;pointer-events:none;opacity:.12}
+.hero-dots.g1{top:20%;right:8%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hero-dots.g1 span{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:dotPulse 3s ease-in-out infinite}
+.hero-dots.g1 span:nth-child(2){animation-delay:.3s}
+.hero-dots.g1 span:nth-child(3){animation-delay:.6s}
+.hero-dots.g1 span:nth-child(4){animation-delay:.9s}
+.hero-dots.g1 span:nth-child(5){animation-delay:1.2s}
+.hero-dots.g1 span:nth-child(6){animation-delay:1.5s}
+.hero-dots.g1 span:nth-child(7){animation-delay:1.8s}
+.hero-dots.g1 span:nth-child(8){animation-delay:2.1s}
+.hero-dots.g1 span:nth-child(9){animation-delay:2.4s}
+.hero-dots.g2{bottom:25%;left:6%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hero-dots.g2 span{width:4px;height:4px;border-radius:50%;background:var(--purple)}
+@keyframes dotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+.hero-glow{position:absolute;top:50%;left:50%;width:700px;height:700px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(43,155,214,.12) 0%,rgba(139,126,200,.08) 40%,transparent 70%);border-radius:50%;filter:blur(80px);animation:glowPulse 6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}50%{transform:translate(-50%,-50%) scale(1.3);opacity:1}}
+.hero-logo{display:inline-flex;align-items:center;gap:10px;padding:10px 24px;border-radius:100px;border:1px solid rgba(43,155,214,.25);background:rgba(43,155,214,.08);color:var(--cyan);font-size:15px;font-weight:600;letter-spacing:.06em;margin-bottom:32px;animation:fadeInUp .8s ease;backdrop-filter:blur(10px)}
+.hero-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:pulse-dot 2s infinite}
+.hero h1{font-size:clamp(42px,8vw,82px);font-weight:800;line-height:1.1;letter-spacing:-.02em;animation:fadeInUp .8s .1s ease both}
+.hero h1 .gradient-text{background:linear-gradient(135deg,#1a8bc4 0%,#6366e0 50%,#7c5fbf 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .sub-title{font-size:clamp(20px,3vw,34px);font-weight:600;color:var(--text-secondary);margin-top:12px;animation:fadeInUp .8s .15s ease both}
+.hero .sub-title em{font-style:normal;background:linear-gradient(135deg,#d4910d,#d63013);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .sub-title .honor-badge{display:inline-block;padding:4px 14px;border-radius:100px;background:linear-gradient(135deg,rgba(43,155,214,.08),rgba(124,95,191,.08));border:1px solid rgba(43,155,214,.2);font-size:clamp(13px,1.6vw,17px);font-weight:600;background-clip:unset;-webkit-text-fill-color:initial;background:rgba(43,155,214,.06);color:var(--cyan);letter-spacing:.03em;margin-left:6px}
+.hero-desc{max-width:520px;margin-top:20px;color:var(--text-muted);font-size:15px;line-height:1.8;animation:fadeInUp .8s .2s ease both}
+.hero-scroll{position:absolute;bottom:36px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;animation:fadeInUp .8s .4s ease both,float 3s ease-in-out 1s infinite}
+.hero-scroll span{font-size:12px;color:var(--text-muted);letter-spacing:.1em}
+.hero-scroll svg{width:18px;height:18px;opacity:.35}
+
+/* ═══ SECTION DIVIDER ═══ */
+.section-divider{
+  position:relative;z-index:1;text-align:center;padding:20px;
+  color:var(--text-muted);font-size:12px;letter-spacing:.15em;
+  display:flex;align-items:center;justify-content:center;gap:16px;
+}
+.section-divider::before,.section-divider::after{
+  content:'';flex:1;max-width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+}
+
+/* ═══ MOKA AI SHOW SECTION ═══ */
+.ai-show-section{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px 80px;
+}
+.ai-show-section::before{content:'';position:absolute;inset:0 15%;height:1px;background:linear-gradient(90deg,transparent,rgba(43,155,214,.1),transparent);pointer-events:none}
+
+.ai-show-content{max-width:1100px;width:100%;display:flex;align-items:center;gap:48px}
+@media(max-width:900px){.ai-show-content{flex-direction:column;gap:24px;text-align:center}}
+.ai-show-intro{flex:0 0 260px;text-align:left}
+@media(max-width:900px){.ai-show-intro{text-align:center}}
+.ai-show-intro h2{font-size:clamp(22px,3vw,32px);font-weight:700;line-height:1.3}
+.ai-show-intro h2 .highlight{display:block;color:#48c6ef;font-size:clamp(28px,4vw,42px)}
+.ai-show-intro p{color:var(--text-muted);font-size:13px;margin-top:8px;line-height:1.7}
+.ai-show-intro .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:100px;font-size:12px;font-weight:600;margin-top:12px;background:linear-gradient(135deg,rgba(212,145,13,.1),rgba(214,48,19,.06));border:1px solid rgba(212,145,13,.2);color:var(--gold)}
+.video-wrapper{flex:1;max-width:none;border-radius:var(--radius);overflow:hidden;background:#eef1f6;box-shadow:0 12px 40px rgba(0,0,0,.08),0 0 0 1px rgba(43,155,214,.06);border:1px solid rgba(0,0,0,.06);position:relative}
+.video-wrapper::after{content:'';position:absolute;inset:-3px;border-radius:calc(var(--radius) + 4px);border:1px solid rgba(43,155,214,.08);pointer-events:none;transition:opacity .5s;opacity:.6}
+.video-wrapper:hover::after{opacity:1;border-color:rgba(43,155,214,.2);box-shadow:0 0 25px rgba(43,155,214,.08)}
+.video-wrapper video{width:100%;display:block;border-radius:var(--radius)}
+
+/* ═══ AI先锋风采 SECTION ═══ */
+.program-section{position:relative;z-index:1;padding:60px 20px 40px}
+.program-section::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:80%;max-width:600px;height:1px;background:linear-gradient(90deg,transparent,rgba(43,155,214,.2),transparent)}
+.program-header{max-width:1100px;margin:0 auto 32px;display:flex;align-items:center;gap:48px}
+@media(max-width:900px){.program-header{flex-direction:column;gap:16px;text-align:center}}
+.program-intro{flex:0 0 280px;text-align:left}
+@media(max-width:900px){.program-intro{text-align:center;flex:none}}
+.program-intro h2{font-size:clamp(20px,3vw,28px);font-weight:700;line-height:1.3}
+.program-intro h2 .highlight{display:inline;color:#48c6ef;font-size:clamp(26px,3.5vw,36px);white-space:nowrap}
+.program-intro p{color:var(--text-muted);font-size:13px;margin-top:8px;line-height:1.7}
+.program-stats{flex:1;display:flex;justify-content:space-evenly;gap:16px;flex-wrap:wrap}
+.stat-item{text-align:center;padding:0 12px;position:relative}
+.stat-item::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:12px;height:1px;background:linear-gradient(90deg,transparent,rgba(43,155,214,.2),transparent);opacity:0;transition:opacity .4s}
+.stat-item:hover::after{opacity:1}
+.stat-number{font-size:clamp(36px,5vw,52px);font-weight:800;background:linear-gradient(135deg,#00c6ff,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;position:relative}
+.stat-label{font-size:13px;color:var(--text-secondary);margin-top:4px;letter-spacing:.04em;font-weight:400}
+
+/* ═══ FILTER ═══ */
+.filter-bar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:14px 20px;background:rgba(255,255,255,.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.filter-pill{padding:7px 18px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;transition:all .3s ease;font-family:inherit;white-space:nowrap}
+.filter-pill:hover{border-color:rgba(0,0,0,.2);color:var(--text)}
+.filter-pill.active{background:rgba(43,155,214,.08);border-color:#2b9bd6;color:#2b9bd6;font-weight:600}
+
+/* ═══ CARDS ═══ */
+.cards-section{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:40px 20px 80px}
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.cards-grid{grid-template-columns:1fr}}
+
+.card{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;transition:all .5s cubic-bezier(.23,1,.32,1);overflow:hidden;display:flex;flex-direction:column;gap:12px}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dept-color,#48c6ef);z-index:2}
+/* Card hover glow border */
+.card-glow{position:absolute;inset:-1px;border-radius:calc(var(--radius) + 1px);z-index:-1;pointer-events:none;opacity:0;transition:opacity .4s;background:color-mix(in srgb,var(--dept-color,#48c6ef) 10%,transparent);filter:blur(8px)}
+.card:hover .card-glow{opacity:1}
+.card>*{position:relative;z-index:1}
+.card:hover{border-color:color-mix(in srgb,var(--dept-color,#48c6ef) 25%,transparent);box-shadow:0 12px 40px rgba(0,0,0,.08),0 0 0 1px color-mix(in srgb,var(--dept-color,#48c6ef) 12%,transparent);transform:translateY(-4px)}
+.card.hidden{display:none}
+
+/* ── Enhanced corner icons by role ── */
+.card-corner{position:absolute;top:0;right:0;z-index:1;width:64px;height:64px;overflow:hidden;pointer-events:none;opacity:.28;transition:opacity .3s}
+.card:hover .card-corner{opacity:.55}
+.card-corner-svg{position:absolute;top:4px;right:4px;width:40px;height:40px}
+
+/* 测试TL — test automation brackets */
+.role-tl .card-corner-svg .outer{fill:none;stroke:var(--dept-color);stroke-width:1.8;stroke-linecap:round}
+.role-tl .card-corner-svg .inner{fill:none;stroke:var(--dept-color);stroke-width:1.4;stroke-linecap:round;opacity:.5}
+.role-tl .card-corner-svg .dot{fill:var(--dept-color);opacity:.6}
+
+/* 后端 — code brackets + gear circle */
+.role-backend .card-corner-svg .gear{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-backend .card-corner-svg .inner{fill:none;stroke:var(--dept-color);stroke-width:1.4;opacity:.5;stroke-dasharray:3 2}
+.role-backend .card-corner-svg .dot{fill:var(--dept-color)}
+
+/* 前端 — window frame + columns */
+.role-frontend .card-corner-svg .frame{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-frontend .card-corner-svg .col{fill:color-mix(in srgb,var(--dept-color)30%,transparent)}
+.role-frontend .card-corner-svg .dot{fill:var(--dept-color)}
+
+/* ATS研发-AI — neural network */
+.role-ai-dev .card-corner-svg .node{fill:var(--dept-color)}
+.role-ai-dev .card-corner-svg .conn{fill:none;stroke:var(--dept-color);stroke-width:1.2;opacity:.5}
+.role-ai-dev .card-corner-svg .ring{fill:none;stroke:var(--dept-color);stroke-width:.8;opacity:.3}
+
+/* 产品经理 — wireframe diamond + grid */
+.role-pm .card-corner-svg .diamond{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-pm .card-corner-svg .gridline{fill:none;stroke:var(--dept-color);stroke-width:.8;opacity:.3}
+.role-pm .card-corner-svg .dot{fill:var(--dept-color);opacity:.5}
+
+/* 项目总监 — milestone diamond + flag */
+.role-pd .card-corner-svg .diamond{fill:color-mix(in srgb,var(--dept-color)50%,transparent);stroke:var(--dept-color);stroke-width:1.4}
+.role-pd .card-corner-svg .flag{fill:none;stroke:var(--dept-color);stroke-width:1.4}
+.role-pd .card-corner-svg .dot{fill:var(--dept-color)}
+
+/* 渠道交付 — pipeline arrows flow */
+.role-channel .card-corner-svg .pipe{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-channel .card-corner-svg .arrow{fill:color-mix(in srgb,var(--dept-color)60%,transparent)}
+.role-channel .card-corner-svg .dot{fill:var(--dept-color);opacity:.4}
+
+/* 解决方案 — compass + target */
+.role-solution .card-corner-svg .circle{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-solution .card-corner-svg .cross{fill:none;stroke:var(--dept-color);stroke-width:1.2}
+.role-solution .card-corner-svg .dot{fill:var(--dept-color)}
+
+/* 全国负责人 — globe network */
+.role-network .card-corner-svg .globe{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-network .card-corner-svg .meridian{fill:none;stroke:var(--dept-color);stroke-width:.8;opacity:.4}
+.role-network .card-corner-svg .dot{fill:var(--dept-color);opacity:.6}
+
+/* 客服中心 — headset + wave */
+.role-cs .card-corner-svg .headset{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-cs .card-corner-svg .wave{fill:none;stroke:var(--dept-color);stroke-width:1;opacity:.4}
+.role-cs .card-corner-svg .dot{fill:var(--dept-color);opacity:.6}
+
+/* 销售 — growth chart trend */
+.role-sales .card-corner-svg .axis{fill:none;stroke:var(--dept-color);stroke-width:1.2}
+.role-sales .card-corner-svg .line{fill:none;stroke:var(--dept-color);stroke-width:2;stroke-linecap:round}
+.role-sales .card-corner-svg .dot{fill:var(--dept-color)}
+
+/* 实施 — deployment checklist */
+.role-impl .card-corner-svg .box{fill:none;stroke:var(--dept-color);stroke-width:1.6}
+.role-impl .card-corner-svg .check{fill:none;stroke:var(--dept-color);stroke-width:1.4;stroke-linecap:round}
+.role-impl .card-corner-svg .dot{fill:var(--dept-color);opacity:.4}
+
+/* Role patterns (background) */
+.role-pattern{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.04;border-radius:var(--radius);transition:opacity .3s}
+.card:hover .role-pattern{opacity:.1}
+.role-tl .role-pattern{background-image:linear-gradient(45deg,var(--dept-color) 1px,transparent 1px),linear-gradient(-45deg,var(--dept-color) 1px,transparent 1px);background-size:28px 28px}
+.role-backend .role-pattern{background-image:repeating-linear-gradient(0deg,transparent,transparent 18px,var(--dept-color) 18px,var(--dept-color) 19px);background-size:36px 36px;opacity:.03}
+.role-frontend .role-pattern{background:repeating-linear-gradient(90deg,var(--dept-color) 0px,var(--dept-color) 1px,transparent 1px,transparent 25%),repeating-linear-gradient(0deg,transparent,transparent 20px,var(--dept-color) 20px,var(--dept-color) 21px);opacity:.03}
+.role-ai-dev .role-pattern{background-image:radial-gradient(circle at 15% 25%,var(--dept-color) 1px,transparent 1px),radial-gradient(circle at 45% 60%,var(--dept-color) 1px,transparent 1px),radial-gradient(circle at 75% 30%,var(--dept-color) 1px,transparent 1px),radial-gradient(circle at 85% 70%,var(--dept-color) 1px,transparent 1px),radial-gradient(circle at 30% 80%,var(--dept-color) 1px,transparent 1px);background-size:80px 80px,100px 100px,90px 90px,110px 110px,70px 70px;background-position:0 0,20px 10px,10px 30px,30px 0,0 20px;opacity:.04}
+.role-pm .role-pattern{background-image:linear-gradient(90deg,var(--dept-color) .5px,transparent .5px),linear-gradient(0deg,var(--dept-color) .5px,transparent .5px);background-size:30px 30px;opacity:.03}
+.role-pd .role-pattern{background:repeating-linear-gradient(0deg,transparent,transparent 24px,var(--dept-color) 24px,var(--dept-color) 25px);background-size:100% 50px;opacity:.03}
+.role-channel .role-pattern{background:repeating-linear-gradient(45deg,transparent,transparent 14px,var(--dept-color) 14px,var(--dept-color) 15px);background-size:20px 20px;opacity:.03}
+.role-solution .role-pattern{background:radial-gradient(circle at 80% 20%,var(--dept-color) 0%,transparent 35%);opacity:.05}
+.role-network .role-pattern{background-image:radial-gradient(circle at 20% 40%,var(--dept-color) 1.5px,transparent 1.5px),radial-gradient(circle at 50% 70%,var(--dept-color) 1px,transparent 1px),radial-gradient(circle at 80% 25%,var(--dept-color) 1px,transparent 1px);background-size:60px 60px,80px 80px,70px 70px;opacity:.04}
+.role-cs .role-pattern{background:radial-gradient(ellipse 30% 20% at 25% 30%,var(--dept-color) 0%,transparent 50%),radial-gradient(ellipse 20% 15% at 65% 55%,var(--dept-color) 0%,transparent 50%),radial-gradient(ellipse 25% 18% at 45% 75%,var(--dept-color) 0%,transparent 50%);opacity:.03}
+.role-sales .role-pattern{background:repeating-linear-gradient(100deg,transparent,transparent 20px,var(--dept-color) 20px,var(--dept-color) 21px);background-size:28px 28px;opacity:.03}
+.role-impl .role-pattern{background-image:linear-gradient(90deg,transparent 0%,transparent 80%,var(--dept-color) 80%,var(--dept-color) 82%,transparent 82%),linear-gradient(0deg,transparent 0%,transparent 80%,var(--dept-color) 80%,var(--dept-color) 82%,transparent 82%);background-size:24px 24px;opacity:.03}
+
+/* Card layout */
+.card-top{display:flex;align-items:flex-start;gap:18px}
+.avatar-wrap{position:relative;flex-shrink:0;width:100px;height:100px}
+.card-avatar{width:100px;height:100px;border-radius:20px;overflow:hidden;border:3px solid rgba(0,0,0,.08);transition:all .4s cubic-bezier(.23,1,.32,1);position:relative;z-index:1;box-shadow:0 6px 24px rgba(0,0,0,.1)}
+.card:hover .card-avatar{border-color:var(--dept-color);box-shadow:0 6px 30px color-mix(in srgb,var(--dept-color)35%,transparent);transform:scale(1.04)}
+.card-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-glow{position:absolute;inset:-3px;border-radius:22px;border:2px solid var(--dept-color);opacity:0;z-index:0;transition:all .5s ease;pointer-events:none}
+.card:hover .avatar-glow{opacity:.5;animation:avatarPulse 2s ease-in-out infinite}
+@keyframes avatarPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.08);opacity:.3}}
+.card-meta{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:100px}
+.card-name{font-size:17px;font-weight:700;color:var(--text);line-height:1.3}
+.card-dept{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+.card-slogan-line{font-size:13px;color:var(--text-secondary);font-style:italic;line-height:1.4;margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.card-slogan-line .slogan-chip{display:inline-block;padding:1px 6px;border-radius:3px;background:color-mix(in srgb,var(--dept-color)12%,transparent);color:var(--dept-color);font-size:11px;font-style:normal;font-weight:600}
+
+/* ═══ STORY ═══ */
+.story-wrap{padding:12px 14px;border-radius:var(--radius-sm);background:rgba(0,0,0,.02);border:1px solid rgba(0,0,0,.06);transition:all .3s}
+.card:hover .story-wrap{background:rgba(0,0,0,.03);border-color:color-mix(in srgb,var(--dept-color)25%,transparent)}
+.story-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.04em;background:linear-gradient(135deg,rgba(72,198,239,.12),rgba(161,140,209,.12));color:var(--cyan);margin-bottom:6px}
+.story-tag svg{width:11px;height:11px}
+.story-text{font-size:13px;color:var(--text-secondary);line-height:1.7}
+
+
+/* ═══ BUTTON ═══ */
+.btn-view{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:inherit;border:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.02);color:var(--text-secondary);cursor:pointer;transition:all .3s ease;text-decoration:none}
+.btn-view:hover{background:color-mix(in srgb,var(--dept-color)15%,transparent);border-color:color-mix(in srgb,var(--dept-color)40%,transparent);color:var(--text)}
+.btn-view.btn-active{border:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.02);color:var(--text-secondary)}
+.btn-view.btn-active:hover{background:linear-gradient(135deg,var(--dept-color),color-mix(in srgb,var(--dept-color)30%,#fff));border-color:var(--dept-color);color:#fff;box-shadow:0 4px 20px color-mix(in srgb,var(--dept-color)25%,transparent);transform:translateY(-1px)}
+.btn-view .link-icon{width:15px;height:15px;flex-shrink:0}
+.btn-view .link-arrow{width:13px;height:13px;opacity:0;transition:all .3s}
+.btn-view.btn-active .link-arrow{opacity:.7}
+.btn-view.btn-active:hover .link-arrow{opacity:1;transform:translateX(3px)}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.footer{position:relative;z-index:1;text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border)}
+
+/* ═══ SECTION BRIDGE ═══ */
+.section-bridge{
+  position:relative;z-index:1;text-align:center;
+  padding:60px 20px 20px;
+}
+.section-bridge-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.section-bridge .scroll-arrow{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  animation:float 3s ease-in-out infinite;cursor:pointer;opacity:.6;
+  transition:opacity .3s;
+}
+.section-bridge .scroll-arrow:hover{opacity:1}
+.section-bridge .scroll-arrow span{font-size:13px;color:var(--text-muted);letter-spacing:.08em}
+.section-bridge .scroll-arrow svg{width:20px;height:20px;opacity:.45}
+.section-bridge p{font-size:13px;color:var(--text-muted);line-height:1.6;max-width:400px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#eef0f5}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#2b9bd6,#7c5fbf);border-radius:3px}
+</style>
+</head>
+<body>
+<canvas id="particleCanvas"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-scanline"></div>
+  <div class="hero-orb o1"></div>
+  <div class="hero-orb o2"></div>
+  <div class="hero-orb o3"></div>
+  <div class="hero-bracket tl"></div>
+  <div class="hero-bracket tr"></div>
+  <div class="hero-bracket bl"></div>
+  <div class="hero-bracket br"></div>
+  <!-- Robot tech illustration -->
+  <div class="hero-tech-figure" aria-hidden="true">
+    <svg viewBox="0 0 180 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Antenna -->
+      <line x1="90" y1="5" x2="90" y2="28" stroke="#2b9bd6" stroke-width="1.5"/>
+      <circle cx="90" cy="5" r="3" fill="#2b9bd6" opacity=".8"/>
+      <circle cx="90" cy="5" r="6" fill="#2b9bd6" opacity=".2"/>
+      <!-- Head -->
+      <rect x="55" y="28" width="70" height="50" rx="8" stroke="#2b9bd6" stroke-width="1.8"/>
+      <!-- Eyes -->
+      <rect x="66" y="40" width="14" height="8" rx="2" stroke="#00c6ff" stroke-width="1.2" fill="rgba(0,198,255,.12)"/>
+      <line x1="73" y1="40" x2="73" y2="48" stroke="#00c6ff" stroke-width=".8"/>
+      <rect x="100" y="40" width="14" height="8" rx="2" stroke="#00c6ff" stroke-width="1.2" fill="rgba(0,198,255,.12)"/>
+      <line x1="107" y1="40" x2="107" y2="48" stroke="#00c6ff" stroke-width=".8"/>
+      <!-- Mouth / grid -->
+      <line x1="70" y1="84" x2="110" y2="84" stroke="#2b9bd6" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="70" y1="88" x2="110" y2="88" stroke="#2b9bd6" stroke-width="1" stroke-dasharray="3 2"/>
+      <!-- Neck -->
+      <rect x="83" y="78" width="14" height="12" rx="2" stroke="#2b9bd6" stroke-width="1" opacity=".5"/>
+      <!-- Body -->
+      <rect x="46" y="90" width="88" height="65" rx="8" stroke="#2b9bd6" stroke-width="1.8"/>
+      <!-- Chest circuit -->
+      <rect x="66" y="100" width="48" height="24" rx="4" stroke="#7c5fbf" stroke-width="1" fill="rgba(124,95,191,.08)"/>
+      <line x1="72" y1="112" x2="108" y2="112" stroke="#7c5fbf" stroke-width=".8" opacity=".6"/>
+      <circle cx="76" cy="112" r="2" fill="#7c5fbf" opacity=".8"/>
+      <circle cx="94" cy="112" r="2" fill="#7c5fbf" opacity=".8"/>
+      <circle cx="108" cy="112" r="2" fill="#7c5fbf" opacity=".8"/>
+      <!-- Heart indicator -->
+      <line x1="78" y1="105" x2="78" y2="119" stroke="#00c6ff" stroke-width=".8" opacity=".5"/>
+      <line x1="102" y1="105" x2="102" y2="119" stroke="#00c6ff" stroke-width=".8" opacity=".5"/>
+      <!-- Arms -->
+      <line x1="46" y1="100" x2="28" y2="120" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="28" y1="120" x2="24" y2="145" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="134" y1="100" x2="152" y2="120" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="152" y1="120" x2="156" y2="145" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Hand dots -->
+      <circle cx="24" cy="147" r="3" fill="#2b9bd6" opacity=".4"/>
+      <circle cx="156" cy="147" r="3" fill="#2b9bd6" opacity=".4"/>
+      <!-- Legs -->
+      <line x1="70" y1="155" x2="64" y2="190" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="110" y1="155" x2="116" y2="190" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Feet -->
+      <line x1="50" y1="190" x2="78" y2="190" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="102" y1="190" x2="130" y2="190" stroke="#2b9bd6" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Data rings around head -->
+      <ellipse cx="90" cy="53" rx="55" ry="38" stroke="#7c5fbf" stroke-width=".6" stroke-dasharray="4 6" opacity=".35"/>
+      <ellipse cx="90" cy="53" rx="62" ry="43" stroke="#2b9bd6" stroke-width=".5" stroke-dasharray="2 8" opacity=".2"/>
+    </svg>
+  </div>
+  <!-- Circuit decoration lines -->
+  <div class="hero-circuit c1" aria-hidden="true">
+    <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
+      <path d="M0 20h40l10-10h20l10 10h40" stroke="#2b9bd6" stroke-width="1" stroke-dasharray="4 3"/>
+      <circle cx="40" cy="20" r="3" fill="#2b9bd6" opacity=".4"/>
+      <circle cx="70" cy="10" r="2" fill="#7c5fbf" opacity=".4"/>
+      <circle cx="110" cy="20" r="2.5" fill="#00c6ff" opacity=".5"/>
+      <circle cx="0" cy="20" r="2" fill="#2b9bd6" opacity=".3"/>
+      <path d="M60 10v8l-4 4" stroke="#7c5fbf" stroke-width=".7" fill="none" opacity=".5"/>
+      <line x1="80" y1="10" x2="80" y2="30" stroke="#2b9bd6" stroke-width=".7" stroke-dasharray="2 2" opacity=".4"/>
+      <circle cx="80" cy="32" r="2" fill="#2b9bd6" opacity=".3"/>
+    </svg>
+  </div>
+  <div class="hero-circuit c2" aria-hidden="true">
+    <svg width="100" height="60" viewBox="0 0 100 60" fill="none">
+      <path d="M100 40H60L50 30H30L20 40H0" stroke="#7c5fbf" stroke-width="1" stroke-dasharray="3 4"/>
+      <circle cx="60" cy="40" r="3" fill="#7c5fbf" opacity=".4"/>
+      <circle cx="40" cy="30" r="2" fill="#2b9bd6" opacity=".4"/>
+      <circle cx="20" cy="40" r="2.5" fill="#00c6ff" opacity=".5"/>
+      <circle cx="0" cy="40" r="2" fill="#7c5fbf" opacity=".3"/>
+      <line x1="50" y1="30" x2="50" y2="50" stroke="#2b9bd6" stroke-width=".7" stroke-dasharray="2 2" opacity=".4"/>
+      <circle cx="50" cy="52" r="1.5" fill="#2b9bd6" opacity=".3"/>
+    </svg>
+  </div>
+  <div class="hero-dots g1"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="hero-dots g2"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="hero-logo"><span class="dot"></span>Moka AI Native Organization</div>
+  <h1><span class="gradient-text">Moka AI 先锋集结</span></h1>
+  <div class="sub-title">荣誉时刻 · <em>Honor Wall 2026</em> <span class="honor-badge">● AI Native</span></div>
+  <p class="hero-desc">AI先锋，用实践书写 Moka AI Native 的故事。<br>每一次分享，都是先锋的思考与探索。</p>
+  <div class="hero-scroll" onclick="document.getElementById('programSection').scrollIntoView({behavior:'smooth'})">
+    <span>认识AI先锋</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+  </div>
+</section>
+
+<!-- ═══ MOKA AI SHOW (全屏板块) ═══ -->
+<section class="program-section reveal" id="programSection">
+  <div class="program-header">
+    <div class="program-intro">
+      <h2><span class="highlight">AI先锋风采</span></h2>
+      <p>每个人，都在探索 AI 的边界</p>
+    </div>
+    <div class="program-stats">
+      <div class="stat-item"><div class="stat-number" id="statSpeakers">0</div><div class="stat-label">位AI先锋</div></div>
+      <div class="stat-item"><div class="stat-number" id="statSessions">0</div><div class="stat-label">期精彩分享</div></div>
+      <div class="stat-item"><div class="stat-number" id="statDepts">0</div><div class="stat-label">个部门联动</div></div>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filterBar" style="position:relative;top:auto;backdrop-filter:none;background:transparent;border-bottom:none;border-top:1px solid var(--border);margin-top:20px;padding:14px 0">
+    <button class="filter-pill active" data-filter="all">全部</button>
+  </div>
+
+  <div class="cards-section" style="padding-top:24px">
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+</section>
+
+<div class="section-bridge reveal">
+  <div class="section-bridge-inner">
+    <div class="scroll-arrow" onclick="document.getElementById('aiShowSection').scrollIntoView({behavior:'smooth'})">
+      <span>探索无限可能</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+    </div>
+    <p>先锋们的分享合集 👇</p>
+  </div>
+</div>
+
+<section class="ai-show-section reveal" id="aiShowSection">
+  <div class="ai-show-content">
+    <div class="ai-show-intro">
+      <h2><span class="highlight">Moka AI Show</span></h2>
+      <p>先锋们的合集片段 · 15s精彩预览</p>
+      <div class="badge">📺 活力回顾</div>
+    </div>
+    <div class="video-wrapper" style="background:#000">
+      <video controls playsinline preload="metadata">
+        <source src="vedio/Moka_AI_Show_15s.mp4" type="video/mp4">
+        您的浏览器不支持视频播放
+      </video>
+    </div>
+    <div class="ai-show-intro" style="flex:0 0 260px;text-align:left">
+      <p style="font-size:15px;color:var(--text-secondary);font-weight:600;line-height:1.5">🎬 第一期：听说，Moka 的 AI 同事已经上岗了？</p>
+      <div style="margin-top:16px">
+        <a href="https://app.dingtalk.com/blackboard/h5/listNotice?showmenu=true&dd_progress=false&dd_darkmode=true&dd_share=true&ddfrom=&logkey=&corpid=ding5562cc47fa4d5620#/detail/690e953a0936f2db5ddfcb0de8672025" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#94a3c8;font-size:14px;font-weight:600;text-decoration:none;transition:all .3s ease" onmouseover="this.style.background='rgba(72,198,239,0.12)';this.style.borderColor='rgba(72,198,239,0.4)';this.style.color='#f0f4ff'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#94a3c8'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <span>查看完整视频</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AI全员赋能计划 ═══ -->
+
+
+<footer class="footer">Moka AI Native Organization · 2026 AI先锋集结</footer>
+
+<script>
+const cornerIcons = {
+  'role-tl': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <rect class="outer" x="6" y="4" width="18" height="18" rx="3"/>
+    <path class="inner" d="M11 14l4 4 7-7"/>
+    <circle class="dot" cx="28" cy="6" r="2"/>
+    <line class="inner" x1="24" y1="22" x2="32" y2="30"/>
+  </svg>`,
+  'role-backend': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <rect class="gear" x="8" y="6" width="16" height="16" rx="3"/>
+    <circle class="inner" cx="16" cy="14" r="4"/>
+    <path class="inner" d="M10 2l2 8M22 2l-2 8" stroke="var(--dept-color)"/>
+    <circle class="dot" cx="30" cy="8" r="1.5"/>
+  </svg>`,
+  'role-frontend': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <rect class="frame" x="5" y="5" width="20" height="16" rx="2"/>
+    <rect class="col" x="5" y="5" width="20" height="4" rx="2"/>
+    <line class="dot" x1="12" y1="13" x2="12" y2="21"/>
+    <line class="dot" x1="18" y1="13" x2="18" y2="21"/>
+    <circle class="dot" cx="27" cy="5" r="2"/>
+  </svg>`,
+  'role-ai-dev': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <circle class="node" cx="10" cy="8" r="2.5"/>
+    <circle class="node" cx="22" cy="6" r="2"/>
+    <circle class="node" cx="16" cy="18" r="2.5"/>
+    <line class="conn" x1="12" y1="9" x2="20" y2="7"/>
+    <line class="conn" x1="11" y1="11" x2="15" y2="16"/>
+    <line class="conn" x1="23" y1="9" x2="17" y2="16"/>
+    <circle class="ring" cx="10" cy="8" r="6"/>
+    <circle class="dot" cx="28" cy="14" r="1.5"/>
+  </svg>`,
+  'role-pm': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <rect class="diamond" x="8" y="6" width="16" height="16" rx="2" transform="rotate(45 16 14)"/>
+    <line class="gridline" x1="14" y1="4" x2="14" y2="24"/>
+    <line class="gridline" x1="18" y1="4" x2="18" y2="24"/>
+    <circle class="dot" cx="10" cy="8" r="1.5"/>
+    <circle class="dot" cx="22" cy="20" r="1.5"/>
+  </svg>`,
+  'role-pd': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <path class="diamond" d="M16 4 L22 10 L16 16 L10 10 Z"/>
+    <path class="flag" d="M16 10v16M16 10l8 4-8 4"/>
+    <circle class="dot" cx="28" cy="28" r="2"/>
+  </svg>`,
+  'role-channel': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <line class="pipe" x1="6" y1="10" x2="22" y2="10"/>
+    <line class="pipe" x1="10" y1="18" x2="26" y2="18"/>
+    <polygon class="arrow" points="24,7 30,10 24,13"/>
+    <polygon class="arrow" points="10,15 4,18 10,21"/>
+    <circle class="dot" cx="6" cy="10" r="1.5"/>
+    <circle class="dot" cx="26" cy="18" r="1.5"/>
+  </svg>`,
+  'role-solution': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <circle class="circle" cx="14" cy="12" r="10"/>
+    <line class="cross" x1="14" y1="4" x2="14" y2="20"/>
+    <line class="cross" x1="6" y1="12" x2="22" y2="12"/>
+    <circle class="dot" cx="14" cy="12" r="2"/>
+    <circle class="circle" cx="28" cy="22" r="5" opacity=".4"/>
+  </svg>`,
+  'role-network': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <circle class="globe" cx="14" cy="14" r="10"/>
+    <ellipse class="meridian" cx="14" cy="14" rx="5" ry="10"/>
+    <line class="meridian" x1="4" y1="14" x2="24" y2="14"/>
+    <circle class="dot" cx="28" cy="8" r="2"/>
+    <circle class="dot" cx="30" cy="22" r="1.5"/>
+    <line class="meridian" x1="24" y1="14" x2="28" y2="8"/>
+    <line class="meridian" x1="24" y1="14" x2="30" y2="22"/>
+  </svg>`,
+  'role-cs': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <path class="headset" d="M6 14h2v6a8 8 0 0 0 16 0v-6h2"/>
+    <path class="headset" d="M6 14a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v3"/>
+    <path class="wave" d="M26 8q3 3 0 6M30 6q4 5 0 10"/>
+    <circle class="dot" cx="10" cy="16" r="2"/>
+    <circle class="dot" cx="18" cy="16" r="2"/>
+  </svg>`,
+  'role-sales': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <line class="axis" x1="4" y1="22" x2="34" y2="22"/>
+    <line class="axis" x1="6" y1="4" x2="6" y2="30"/>
+    <path class="line" d="M6 28l6-8 1 2 2-6 2-4 1-2 4-2 1 2 2 4"/>
+    <circle class="dot" cx="28" cy="10" r="2"/>
+    <polygon class="dot" points="28,4 34,10 28,16" opacity=".3"/>
+  </svg>`,
+  'role-impl': `<svg class="card-corner-svg" viewBox="0 0 40 40">
+    <rect class="box" x="6" y="6" width="18" height="18" rx="2"/>
+    <path class="check" d="M10 16l4 4 7-8"/>
+    <rect class="dot" x="28" y="6" width="3" height="3" rx=".5"/>
+    <rect class="dot" x="28" y="14" width="3" height="3" rx=".5"/>
+    <rect class="dot" x="28" y="22" width="3" height="3" rx=".5"/>
+  </svg>`
+};
+const fallbackCorner = `<svg class="card-corner-svg" viewBox="0 0 40 40">
+  <circle cx="16" cy="12" r="8" fill="none" stroke="var(--dept-color)" stroke-width="1.5" opacity=".3"/>
+  <circle cx="16" cy="12" r="2" fill="var(--dept-color)" opacity=".3"/>
+</svg>`;
+
+const deptColors = {
+  'People一体化产品部':'#48c6ef','ATS产品部':'#a18cd1','实施交付部':'#43e97b',
+  '解决方案部':'#f5af19','客户成功部':'#6f86d6','销售部':'#f12711'
+};
+const photoData64 = {};
+const roleClassMap = {
+  '测试TL':'role-tl','后端开发工程师':'role-backend','前端开发工程师':'role-frontend',
+  'ATS研发-AI':'role-ai-dev','产品经理':'role-pm','项目总监':'role-pd',
+  '渠道交付专家':'role-channel','华东解决方案负责人':'role-solution',
+  '全国SMB&中西负责人':'role-network','客户服务中心负责人':'role-cs',
+  '销售经理':'role-sales','华东实施负责人':'role-impl','华北实施负责人':'role-impl'
+};
+
+const storiesData = {
+  '第一期·谢文平':'通过AI完成页面理解、路径导航、交互操作、上下文记忆、代码风险识别、告警解析、问题定位、修复代码生成与结果验证，让AI深度参与测试执行、缺陷发现、自动修复和质量闭环。',
+  '第二期·张豪':'探索AI时代编程新范式。以概率与确定性为底层逻辑>以悬崖草原为边界法则>以三角协作为新范式。底层:两种计算范式共生—中层:悬崖与草原法则落地—顶层:三角协作闲环运转',
+  '第三期·杨明':'构建自动化代码保障与人机协同新范式。人机协作"双引擎"、多Agent协同 Code Review、突破AI上下文极限、重塑质量防线边界：用三重验证体系摸清AI底线，自动化预防约50%线上Bug。',
+  '第四期·刘泽':'拆解AI Agent 如何通过工具调用、记忆体系与技能封装，真正参与信息整理、任务执行、流程自动化与业务提效。应用在各个场景，新闻虾、算法初筛、记账工具、运营助手&电商客服',
+  '第五期·苏鹏':'从发现问题、搭建原型到验证价值，Manus让业务创新不再停留在想法，而是更快走向真实落地。突破竞品调研壁垒、升级产品规划表达、打造AI面试体验Demo、重构招聘协作流程。',
+  '第六期·朱尧':'基于Antigravity(AI驱动IDE)，实现"需求编码测试部署"全流程自动化。专为实施痛点打造Moka工具箱，实现Moka Flow工作流像搭积木一样灵活编排复杂业务逻辑，敏捷应对各类突发需求。',
+  '第七期·周子深':'基于 Claude、Gemini、Minimax 等大模型能力，结合VS Code等开发工具，辅助完成平台方案设计、前端代码生成、接口参数整理、需求信息提炼与数据结构化处理，构建内部集成工作平台。',
+  '第八期·刘国泰':'围绕 OpenClaw Memory 体系，系统拆解 AI 记忆从"生成"到"召回"的完整链路。让 AI 更连续、让记忆更可信、让召回更稳定、让智能体更实用。',
+  '第九期·张均谊':'通过系统化的方法与工具组合，深度融入售前解决方案与销售支持全流程，打造多款高价值工具，显著提升效率与质量，让复杂工作变简单，让专业经验可复制。',
+  '第十期·杨挺':'通过 Obsidian + AI工具 搭建本地知识库，让文章、笔记、会议记录、客户信息、读书划线不再只是"存着"，而是能被AI读取、整理、追问、调用，变成真正可复用的个人知识资产。',
+  '第十一期·田昌文':'不再让一个 Agent 从头扛到尾，而是把需求分析、架构设计、并行开发、代码检查、QA 验证、问题修复拆给不同 Agent 协作完成，像一个小型研发团队一样跑流程、做验证、交付结果。',
+  '第十二期·范曦文':'她不是在用一个工具，而是在带一个新来的聪明同事。用于四个真实场景：低活跃客户数据分析、AI报表可行性分析、产品升级PPT制作、客户工单痛点分析，效率提升75%以上。',
+  '第十三期·王壮':'不是做一个更会回答的模型，而是做一个更会积累的系统。先找一个能证明「复利」的起点—把运行面做成可回放—把过程变成可维护的资产—用治理让「会学」敢上线。',
+  '第十四期·华晓东':'构建属于个人和组织的AI Harness能力，将模型、提示词、上下文与工具能力进行组合，让AI不只是生成答案，而是真正参与业务问题解决与经验沉淀，帮助个人提效、组织进化。',
+  '第十五期·冯梦佳':'销售如何利用 Codex 等 Agent 工具高效产出客户汇报材料并降低 Token 消耗。她通过配置全局、项目及对话三层记忆库沉淀行业方案与产品知识，利用大语言模型辅助生成和优化 Prompt 思路，将 HTML 输出调整为 A4 打印版以便直接转 PDF 分享，并通过修改源码和开发批注 Skill 快速定制材料，最终实现用三分之一的 Token 成本产出同等价值的定制方案。',
+  '第十六期·徐庆':'针对实施过程中重复配置和易错操作的痛点，团队开发了名为 PMDC 的 AI 交付助手，通过自然语言或文件识别实现系统自动配置。分享从单纯使用 AI 问答转向构建结构化 Skill 的方法论，强调通过拆解 SOP、设定白名单与安全阀以及采用"用户-Skill-底座"三层架构来确保执行的准确性与边界可控。',
+  '第十七期·杨挺':'一个人的经验、身体信号和成长经历，如何通过 AI 变成可复用、可追踪、可对话的个人智能资产？通过 Claude AI、Obsidian、Typeless等工具组合，将面试判断、健康管理和人生复盘系统化沉淀。'
+};
+
+const sessions = [
+  { session:'第一期', name:'谢文平', dept:'People一体化产品部', title:'测试TL', topic:'AI线上质量保障体系', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=fc747e49-264a-43a0-902d-b423cfa0378d&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'AI缩短从想法到上线的距离' },
+  { session:'第二期', name:'张豪', dept:'People一体化产品部', title:'后端开发工程师', topic:'AI coding时代的进化之路', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=869ada78-49fc-4b82-8bb8-3d8c14fbe662&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'以确定性固守悬崖，以概率驰骋草原，以三角协作驾驭AI' },
+  { session:'第三期', name:'杨明', dept:'People一体化产品部', title:'后端开发工程师', topic:'AI构建的自动化代码保障体系', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=98d71be3-e2d6-44ff-b059-efa4b04f9046&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'让AI成为效率的放大器，质量守护器' },
+  { session:'第四期', name:'刘泽', dept:'ATS产品部', title:'ATS研发-AI', topic:'从零上手小龙虾OpenClaw—养好虾的三个动作', link: 'https://khcgxy.mokahr.com/m/#/kng/doc/play?kngId=47e72840-ee24-467a-8066-6afbd3d56190&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'拥抱AI，拥抱成长' },
+  { session:'第五期', name:'苏鹏', dept:'ATS产品部', title:'产品经理', topic:'介绍一个解决问题刚刚好的AI工具——Manus', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=891a1c39-dc83-49b4-971f-28e5835569ed&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'对现状保持不满，观察它，解决它' },
+  { session:'第六期', name:'朱尧', dept:'实施交付部', title:'项目总监', topic:'非专业程序员—Antigravity vibe coding 探索之路', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=f974601d-7249-489f-a911-6fb19f3c66de&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'把需求说清楚，剩下的交给AI' },
+  { session:'第七期', name:'周子深', dept:'实施交付部', title:'渠道交付专家', topic:'Vibe Coding实战：个人提效工具的系统化构建', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=d99cd3fb-1464-4fc4-8003-81fd8334dfe4&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'AI驱动自动化，重构渠道交付效率' },
+  { session:'第八期', name:'刘国泰', dept:'ATS产品部', title:'后端开发工程师', topic:'OpenClaw记忆-Agent记忆工程实践', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=fc5125c3-c7d1-41a8-ab79-4dc81a29b822&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'你越用它，它越像你，然后一起变强' },
+  { session:'第九期', name:'张均谊', dept:'解决方案部', title:'华东解决方案负责人', topic:'非技术小白的 AI 进阶之路', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=d8d46107-8686-417a-94e0-310f26411964&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'让AI成为你的思考伙伴，把经验沉淀为组织能力' },
+  { session:'第十期', name:'杨挺', dept:'客户成功部', title:'全国SMB&中西负责人', topic:'你的知识值得被AI管理', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=b916bbb6-8aa5-4d27-a379-a152673a9f51&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'把知识管理交给 AI ，把思考空间留给自己' },
+  { session:'第十一期', name:'田昌文', dept:'People一体化产品部', title:'前端开发工程师', topic:'claude code的进阶之路', link: 'https://khcgxy.mokahr.com/m/#/kng/doc/play?kngId=245a2579-fe4c-4c9b-bdef-8a2f3952a75b&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'让每一次变化，都成为下一次进化' },
+  { session:'第十二期', name:'范曦文', dept:'客户成功部', title:'客户服务中心负责人', topic:'把 Claude code 训练成超级同事', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=504298ce-6ca9-423f-968f-983f16525674&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'你做大脑，Claude帮你做手脚' },
+  { session:'第十三期', name:'王壮', dept:'ATS产品部', title:'后端开发工程师', topic:'探索Agent的进化', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=7bea5b28-595f-47c2-8fc7-26014da75225&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'从会回答，到会持续变强' },
+  { session:'第十四期', name:'华晓东', dept:'实施交付部', title:'华东实施负责人', topic:'Harness，更好地驾驭AI', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=0d4b2ec8-2d52-4a8b-8ac5-e18059b699a2&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'AI不是替代者，而是能力放大器' },
+  { session:'第十五期', name:'冯梦佳', dept:'销售部', title:'销售经理', topic:'穷鬼套餐-销售如何低成本用好Agent', link: 'https://khcgxy.mokahr.com/m/#/kng/doc/play?kngId=790316b4-90e3-4195-a270-20588b0ff165&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'用最低成本撬动最大AI价值' },
+  { session:'第十六期', name:'徐庆', dept:'实施交付部', title:'华北实施负责人', topic:'从「用AI」到「让AI干活」', link: 'https://khcgxy.mokahr.com/m/#/kng/scan?type=0&kngId=5214fc8e-fca2-45bc-9a55-33b5f9d5e859&targetId=&targetCode=kng', slogan:'从会用AI到让AI自己干，效率翻倍' },
+  { session:'第十七期', name:'杨挺', dept:'客户成功部', title:'全国SMB&中西负责人', topic:'万物皆可蒸馏', link: 'https://khcgxy.mokahr.com/m/#/kng/video/play?kngId=55364db4-e846-44ba-b7eb-0ed0067c5ed5&type=0&targetId=&targetCode=kng&og=7c24dcc8-b598-4a91-88cb-caa94e1f34ec', slogan:'蒸蒸日上，"馏"住精华' }
+];
+
+function mergeSessions(data) {
+  const map = new Map();
+  data.forEach(s => {
+    const key = s.name;
+    if (!map.has(key)) { map.set(key, { ...s, sessions: [s] }); }
+    else { map.get(key).sessions.push(s); }
+  });
+  return Array.from(map.values());
+}
+
+function buildFilters(people) {
+  const depts = [...new Set(people.map(p => p.dept))];
+  const bar = document.getElementById('filterBar');
+  const allBtn = bar.querySelector('[data-filter="all"]');
+  allBtn.addEventListener('click', () => applyFilter('all', allBtn));
+  depts.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-pill'; btn.dataset.filter = d; btn.textContent = d;
+    btn.addEventListener('click', () => applyFilter(d, btn));
+    bar.appendChild(btn);
+  });
+}
+
+function buildCards(people) {
+  const grid = document.getElementById('cardsGrid');
+  people.forEach((p) => {
+    const color = deptColors[p.dept]||'#48c6ef';
+    const roleKey = roleClassMap[p.title]||'';
+    const photoFile = photoFiles[p.name]||'';
+    const card = document.createElement('div');
+    card.className = `card reveal ${roleKey}`;
+    card.style.setProperty('--dept-color', color);
+    card.dataset.dept = p.dept; card.dataset.name = p.name;
+
+    const cornerSvg = cornerIcons[roleKey] || fallbackCorner;
+
+    const avatarImg = photoFile
+      ? `<img src="${photoData64[p.name] || 'picture/thumb/' + photoFile}" alt="${p.name}" loading="lazy">`
+      : `<div style="width:100%;height:100%;background:linear-gradient(135deg,${color},${color}88);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff">${p.name.charAt(0)}</div>`;
+    const sloganLine = p.sessions.map(s => s.slogan).filter(Boolean).join(' · ');
+
+    const sessionBlocks = p.sessions.map((s, idx) => {
+      const storyKey = `${s.session}·${s.name}`;
+      const storyText = storiesData[storyKey];
+      const storyBlock = storyText
+        ? `<div class="story-wrap">
+            <div class="story-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              先锋故事
+            </div>
+            <div class="story-text">${storyText}</div>
+          </div>` : '';
+      const linkBlock = s.link && s.link.trim() !== ''
+        ? `<a href="${s.link}" target="_blank" class="btn-view btn-active">
+            <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span>${s.session} · ${s.topic}</span>
+            <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>`
+        : `<div class="btn-view" onclick="event.stopPropagation();">
+            <svg class="link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span>分享内容即将上线</span>
+          </div>`;
+      const gap = idx > 0 ? ' style="margin-top:10px;padding-top:14px;border-top:1px solid rgba(0,0,0,.06)"' : '';
+      return `<div${gap}>${storyBlock}${linkBlock}</div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="card-corner">${cornerSvg}</div>
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="avatar-wrap">
+          <div class="card-avatar">${avatarImg}</div>
+          <div class="avatar-glow"></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name">${p.name}</div>
+          <div class="card-dept">${p.dept} · ${p.title}</div>
+          ${sloganLine ? `<div class="card-slogan-line"><span class="slogan-chip">AI Slogan</span>"${sloganLine}"</div>` : ''}
+        </div>
+      </div>
+      ${sessionBlocks}
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+function applyFilter(filter, activeBtn) {
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  activeBtn.classList.add('active');
+  document.querySelectorAll('.card').forEach(card => {
+    card.classList.toggle('hidden', !(filter === 'all' || card.dataset.dept === filter));
+  });
+}
+
+function setupReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, {threshold:.1, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+function animateStats() {
+  const us = new Set(sessions.map(s=>s.name)).size, ud = new Set(sessions.map(s=>s.dept)).size, ts = sessions.length;
+  function cu(el,t,d){ const s=performance.now(); function tk(n){const p=Math.min((n-s)/d,1); el.textContent=Math.floor((1-Math.pow(1-p,3))*t); if(p<1) requestAnimationFrame(tk); else el.textContent=t; } requestAnimationFrame(tk); }
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ cu(document.getElementById('statSpeakers'),us,1500); cu(document.getElementById('statSessions'),ts,1500); cu(document.getElementById('statDepts'),ud,1500); obs.disconnect(); } });
+  }, {threshold:.5});
+  obs.observe(document.querySelector('.program-header'));
+}
+
+function initParticles() {
+  const c=document.getElementById('particleCanvas'),x=c.getContext('2d'); let W,H; const p=[],N=90,D=150,cv=Object.values(deptColors);
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;} rs(); addEventListener('resize',rs);
+  function h2r(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  for(let i=0;i<N;i++){const o=cv[Math.random()*cv.length|0];p.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*2.5+1,c:h2r(o),br:Math.random()*2+1});}
+  function dr(){ x.clearRect(0,0,W,H); p.forEach((a,i)=>{ a.x+=a.vx;a.y+=a.vy; if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;
+    /* Draw connecting lines with glow effect */
+    for(let j=i+1;j<p.length;j++){const b=p[j];const dx=a.x-b.x,dy=a.y-b.y;const dist=Math.sqrt(dx*dx+dy*dy);if(dist<D){const al=(1-dist/D)*.08;
+      /* Glow line */
+      x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle=`rgba(${a.c[0]},${a.c[1]},${a.c[2]},${al*.3})`;x.lineWidth=2.5;x.shadowBlur=6;x.shadowColor=`rgba(${a.c[0]},${a.c[1]},${a.c[2]},${al*.5})`;x.stroke();
+      /* Core line */
+      x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle=`rgba(${a.c[0]},${a.c[1]},${a.c[2]},${al})`;x.lineWidth=.6;x.shadowBlur=0;x.stroke();
+    }}
+    /* Particles with glow */
+    x.shadowBlur=12;x.shadowColor=`rgba(${a.c[0]},${a.c[1]},${a.c[2]},.6)`;
+    x.beginPath();x.arc(a.x,a.y,a.r,0,Math.PI*2);x.fillStyle=`rgba(${a.c[0]},${a.c[1]},${a.c[2]},.5)`;
+    x.fill();
+    x.shadowBlur=0;
+    /* Bright center dot */
+    x.beginPath();x.arc(a.x,a.y,a.r*.4,0,Math.PI*2);x.fillStyle=`rgba(255,255,255,.5)`;
+    x.fill();
+  }); requestAnimationFrame(dr); } dr();
+}
+
+const people = mergeSessions(sessions);
+buildCards(people);
+buildFilters(people);
+setupReveal();
+animateStats();
+initParticles();
+</script>
+</body>
+</html>
