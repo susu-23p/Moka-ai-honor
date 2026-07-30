@@ -744,12 +744,14 @@ function initParticles() {
   }); requestAnimationFrame(dr); } dr();
 }
 
+document.addEventListener('DOMContentLoaded', function() {
 const people = mergeSessions(sessions);
 buildCards(people);
 buildFilters(people);
 setupReveal();
 animateStats();
 initParticles();
+});
 </script>
 </body>
 </html>
